@@ -8,7 +8,7 @@ function ProductFeed(props) {
         <Product
           key={product.id}
           id={product.id}
-          title={product.tile}
+          title={product.title}
           price={product.price}
           description={product.description}
           category={product.category}

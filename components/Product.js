@@ -2,6 +2,8 @@ import { StarIcon } from "@heroicons/react/solid";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Currency from "react-currency-formatter";
+import { useDispatch } from "react-redux";
+import { addToBasket } from "../slices/basketSlice";
 
 const MAX_RATING = 5;
 const MIN_RATING = 1;
@@ -15,22 +17,43 @@ function Product(props) {
   // useEffect(() => {
   //   setIsSSR(false);
   // }, []);
+
+  const dispatch = useDispatch();
+
+  const addItemToBasket = () => {
+    const product = {
+      id: props.id,
+      title: props.title,
+      price: props.price,
+      description: props.description,
+      category: props.category,
+      image: props.image,
+      hasPrime: hasPrime,
+      rating: rating,
+    };
+
+    dispatch(addToBasket(product));
+  };
+
   return (
     <div className="flex relative flex-col m-5 bg-white z-30 p-10 items-center">
       <p className="absolute top-2 right-2 text-xs italic text-gray-400">
         {props.category}
       </p>
-      <Image src={props.image} height={200} width={200} objectFit="contain" />
-      <h4 className="my-4">{props.title}</h4>
+      <Image
+        src={props.image}
+        alt=""
+        height={200}
+        width={200}
+        objectFit="contain"
+      />
+      <h3 className="my-4">{props.title}</h3>
       <div className="flex">
-        {
-          /* !isSSR && */
-          Array(rating)
-            .fill()
-            .map((_, i) => (
-              <StarIcon className="h-5 text-yellow-500"></StarIcon>
-            ))
-        }
+        {Array(rating)
+          .fill()
+          .map((_, i) => (
+            <StarIcon key={i} className="h-5 text-yellow-500"></StarIcon>
+          ))}
       </div>
       <p className="text-xs my-2">{props.description}</p>
       <div className="mb-5 ">
@@ -47,7 +70,10 @@ function Product(props) {
           <p>FREE Next Day Delivery</p>
         </div>
       )}
-      <button className="rounded-sm p-2 text-xs md:text-sm bg-yellow-200 hover:bg-yellow-500">
+      <button
+        onClick={addItemToBasket}
+        className="rounded-sm p-2 text-xs md:text-sm bg-yellow-200 hover:bg-yellow-500"
+      >
         Add to Basket
       </button>
     </div>
@@ -55,4 +81,3 @@ function Product(props) {
 }
 
 export default Product;
-("react");
