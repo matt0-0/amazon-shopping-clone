@@ -5,11 +5,16 @@ import { useSelector } from "react-redux";
 import CheckOutProduct from "../components/CheckOutProduct";
 import Currency from "react-currency-formatter";
 import { useSession } from "next-auth/react";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe();
 
 function Checkout() {
   const items = useSelector(selectItems);
   const total = useSelector(selectTotal);
   const { data: session, status } = useSession();
+
+  const createCheckoutSession = () => {};
   return (
     <div className="bg-gray-100">
       <Header />
@@ -47,6 +52,7 @@ function Checkout() {
               </h2>
               {/*If there is a session, you are allowed to checkout. If not logged in, you cannot */}
               <button
+                role="link"
                 disabled={!session}
                 className={`mt-2
         rounded-sm p-2 text-xs md:text-sm bg-yellow-200 hover:bg-yellow-500
