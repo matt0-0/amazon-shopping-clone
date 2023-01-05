@@ -23,7 +23,6 @@ function CheckOutProduct(props) {
   };
 
   const removeItemFromBasket = () => {
-    console.log(props.id);
     dispatch(removeFromBasket(props.id));
   };
   return (

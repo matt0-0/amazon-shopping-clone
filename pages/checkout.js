@@ -1,20 +1,38 @@
 import React from "react";
 import Header from "../components/Header";
+
 import { selectItems, selectTotal } from "../slices/basketSlice";
 import { useSelector } from "react-redux";
 import CheckOutProduct from "../components/CheckOutProduct";
 import Currency from "react-currency-formatter";
 import { useSession } from "next-auth/react";
 import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
-const stripePromise = loadStripe();
+const stripePromise = loadStripe(`${process.env.stripe_public_key}`);
 
 function Checkout() {
   const items = useSelector(selectItems);
   const total = useSelector(selectTotal);
   const { data: session, status } = useSession();
 
-  const createCheckoutSession = () => {};
+  const createCheckoutSession = async () => {
+    const stripe = await stripePromise;
+
+    // call backend to create checkout session
+    const checkoutSession = await axios.post("/api/create-checkout-session", {
+      items: items,
+      email: session.user.email,
+    });
+
+    // redirect user to Stripe checkout
+    const result = await stripe.redirectToCheckout({
+      sessionId: checkoutSession.data.id,
+    });
+
+    if (result.error) alert(result.error.message);
+  };
+
   return (
     <div className="bg-gray-100">
       <Header />
@@ -52,6 +70,7 @@ function Checkout() {
               </h2>
               {/*If there is a session, you are allowed to checkout. If not logged in, you cannot */}
               <button
+                onClick={createCheckoutSession}
                 role="link"
                 disabled={!session}
                 className={`mt-2
